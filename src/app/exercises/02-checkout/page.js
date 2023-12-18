@@ -10,7 +10,7 @@ import './styles.css';
 function CheckoutExercise() {
   const [items, dispatch] = React.useReducer(
     reducer,
-    []
+    null
   );
 
   return (
@@ -36,6 +36,7 @@ function CheckoutExercise() {
         <CheckoutFlow
           items={items}
           taxRate={0.15}
+          dispatch={dispatch}
           handleDeleteItem={(item) =>
             dispatch({
               type: 'delete-item',

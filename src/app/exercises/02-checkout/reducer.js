@@ -1,8 +1,28 @@
 import { produce } from 'immer';
 
+function persist(items) {
+  window.localStorage.setItem('cart', JSON.stringify(items));
+}
+
+function load() {
+  const items = window.localStorage.getItem('cart');
+  if (!items) {
+    return [];
+  }
+  return JSON.parse(items);
+}
+
 function reducer(state, action) {
+  if (action.type == 'load') {
+    console.log('load');
+    return load();
+  }
   return produce(state, (draftState) => {
+    if (!state) {
+      draftState = state = [];
+    }
     switch (action.type) {
+
       case 'add-item': {
         const itemIndex = state.findIndex(
           (item) => item.id === action.item.id
@@ -10,6 +30,7 @@ function reducer(state, action) {
 
         if (itemIndex !== -1) {
           draftState[itemIndex].quantity += 1;
+          persist(draftState);
           return;
         }
 
@@ -17,6 +38,7 @@ function reducer(state, action) {
           ...action.item,
           quantity: 1,
         });
+        persist(draftState);
         return;
       }
 
@@ -26,6 +48,7 @@ function reducer(state, action) {
         );
 
         draftState.splice(itemIndex, 1);
+        persist(draftState);
         return;
       }
     }
